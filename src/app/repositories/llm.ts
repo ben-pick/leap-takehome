@@ -6,7 +6,7 @@ export async function promptLlm(content: string): Promise<NewReponse[]> {
   const res = await huggingFace.chatCompletion({
     model: process.env.MODEL!,
     messages: [{ role: "user", content: contentWithInstructions }],
-    max_tokens: process.env.MAX_TOKENS!,
+    max_tokens: parseInt(process.env.MAX_TOKENS!),
   });
 
   if (!res.choices[0].message.content) {

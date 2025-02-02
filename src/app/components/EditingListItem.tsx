@@ -1,5 +1,5 @@
 "use client"
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useRef } from "react";
 import { CancelIcon,  SaveIcon, SpinnerIcon } from "./Icon";
 import { editResponse } from "../actions/prompt";
 import Input from "./Input";
