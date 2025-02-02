@@ -9,7 +9,7 @@ type ListProps = {
 };
 export default function List({ items }: ListProps) {
   return (
-    <div className="flex-col flex gap-4">
+    <div className="flex-col flex gap-4 overflow-auto">
       {items.map((item) => {
         return <ListItem key={item.id} {...item}></ListItem>;
       })}
