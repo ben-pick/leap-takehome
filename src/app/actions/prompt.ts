@@ -43,7 +43,7 @@ export async function editResponse(responseId: number, formData: FormData) {
   try {
     await updateResponse(
       responseId,
-      editResponseSchema.parse(Object.fromEntries(formData))
+      editResponseSchema.parse(Object.fromEntries(formData)),
     );
     revalidatePath("/home");
     return { message: "Updated successfully", success: true };
