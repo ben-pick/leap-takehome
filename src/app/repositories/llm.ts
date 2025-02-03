@@ -2,10 +2,14 @@ import { huggingFace } from "@/config/llm/huggingFace";
 import { NewReponse } from "../types/prompt";
 
 export async function promptLlm(content: string): Promise<NewReponse[]> {
-  const contentWithInstructions = `You are a tool used to create insights based on user inputs. You must format the response into a list of insights. Each list item have a title to summarise the insight, followed by a concise description of that insight. Each list item should follow the format for example: *TITLE*: DESCRIPTION. Do not try to use sublist with the same syntax. Each list item should be seperated by a newline. Only include the list and no other text before or after. The input is: ${content}`;
+  const instructions =
+    "You are a tool used to create insights based on user inputs. You must format the response into a list of insights. Each list item have a title to summarise the insight, followed by a concise description of that insight. Each list item should follow the format for example: *TITLE*: DESCRIPTION. Do not try to use sublist with the same syntax. Each list item should be seperated by a newline. Only include the list and no other text before or after.";
   const res = await huggingFace.chatCompletion({
     model: process.env.MODEL!,
-    messages: [{ role: "user", content: contentWithInstructions }],
+    messages: [
+      { role: "system", content: instructions },
+      { role: "user", content: content },
+    ],
     max_tokens: parseInt(process.env.MAX_TOKENS!),
   });
 
