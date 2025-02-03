@@ -1,14 +1,13 @@
-import { getPrompt } from "@/app/repositories/prompt";
+import { getActivePrompt } from "@/app/repositories/prompt";
 import List from "@/app/components/List";
 
 export default async function Page() {
-  const prompts = await getPrompt();
-  const responses = prompts.flatMap((p) => p.responses);
+  const prompt = await getActivePrompt();
 
-  return responses.length ? (
+  return prompt && prompt.responses.length ? (
     <List
       items={
-        responses.map((r) => {
+        prompt.responses.map((r) => {
           return {
             title: r.title,
             id: r.id,

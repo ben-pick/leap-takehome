@@ -15,7 +15,7 @@ export default function PromptInput() {
   );
 
   const [restartState, restartPromptFormAction, restartPending] = useActionState(
-    (_prevState: { message: string; success: boolean }, _formData: FormData) =>
+    () =>
       restartPrompt(),
     {
       message: "",

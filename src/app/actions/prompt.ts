@@ -1,10 +1,11 @@
 "use server";
 
-import { promptLlm, rePromptLlm } from "../repositories/llm";
+import { promptLlm } from "../repositories/llm";
 import {
   deletePrompts,
   deleteResponse,
-  getPrompt,
+  getActivePrompt,
+  getPrompts,
   insertPrompt,
   updateResponse,
 } from "../repositories/prompt";
@@ -16,11 +17,8 @@ export async function sendPrompt(formData: FormData) {
   try {
     const content = formData.get("content") as string;
     if (content && content.length) {
-      const prompts = await getPrompt();
-      const responses =
-        prompts.length && prompts[0].responses.length
-          ? await rePromptLlm(content, prompts[0])
-          : await promptLlm(content);
+      const prompts = await getPrompts();
+      const responses = await promptLlm(content, prompts);
       if (responses.length) {
         await insertPrompt({ prompt: content }, responses);
         revalidatePath("/home");
@@ -36,7 +34,16 @@ export async function sendPrompt(formData: FormData) {
 
 export async function removeResponse(responseId: number) {
   try {
-    await deleteResponse(responseId);
+    const prompt = await getActivePrompt();
+    if (!prompt?.responses.find((r) => r.id === responseId)) {
+      return { message: "Failed to remove response", success: false };
+    }
+    if (prompt.responses.length == 1) {
+      // Delete history when no more list
+      await deletePrompts();
+    } else {
+      await deleteResponse(responseId);
+    }
     revalidatePath("/home");
     return { message: "Removed response successfully", success: true };
   } catch (e) {
