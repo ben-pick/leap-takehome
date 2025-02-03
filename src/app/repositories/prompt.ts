@@ -15,7 +15,7 @@ export async function getPrompt() {
 
 export async function insertPrompt(
   newPrompt: NewPrompt,
-  newResponses: NewReponse[],
+  newResponses: NewReponse[]
 ) {
   await deletePrompts();
   const result = await db
@@ -29,11 +29,11 @@ export async function insertPrompt(
         ...res,
         promptId: result[0].promptId,
       };
-    }),
+    })
   );
 }
 
-async function deletePrompts() {
+export async function deletePrompts() {
   // Remove this function to support prompt appending
   await db.delete(response);
   await db.delete(prompt);
@@ -45,7 +45,7 @@ export async function deleteResponse(responseId: number) {
 
 export async function updateResponse(
   responseId: number,
-  update: z.infer<typeof editResponseSchema>,
+  update: z.infer<typeof editResponseSchema>
 ) {
   await db
     .update(response)

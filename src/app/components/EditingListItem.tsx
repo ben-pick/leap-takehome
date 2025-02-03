@@ -25,9 +25,12 @@ export default function EditingListItem({
       _prevState: { message: string; success: boolean },
       formData: FormData,
     ) => {
-      const res = await editResponse(id, formData);
-      setIsEditing(false);
-      return res;
+        const res = await editResponse(id, formData);
+        if (res.success) {
+            setIsEditing(false);
+        }
+        return res;
+
     },
     {
       message: "",

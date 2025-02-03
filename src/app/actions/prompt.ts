@@ -1,8 +1,10 @@
 "use server";
 
-import { promptLlm } from "../repositories/llm";
+import { promptLlm, rePromptLlm } from "../repositories/llm";
 import {
+  deletePrompts,
   deleteResponse,
+  getPrompt,
   insertPrompt,
   updateResponse,
 } from "../repositories/prompt";
@@ -14,9 +16,13 @@ export async function sendPrompt(formData: FormData) {
   try {
     const content = formData.get("content") as string;
     if (content && content.length) {
-      const responses = await promptLlm(content as string);
+      const prompts = await getPrompt();
+      const responses =
+        prompts.length && prompts[0].responses.length
+          ? await rePromptLlm(content, prompts[0])
+          : await promptLlm(content);
       if (responses.length) {
-        await insertPrompt({ prompt: content as string }, responses);
+        await insertPrompt({ prompt: content }, responses);
         revalidatePath("/home");
         return { message: "Prompt queried successfully", success: true };
       }
@@ -43,7 +49,7 @@ export async function editResponse(responseId: number, formData: FormData) {
   try {
     await updateResponse(
       responseId,
-      editResponseSchema.parse(Object.fromEntries(formData)),
+      editResponseSchema.parse(Object.fromEntries(formData))
     );
     revalidatePath("/home");
     return { message: "Updated successfully", success: true };
@@ -59,5 +65,16 @@ export async function editResponse(responseId: number, formData: FormData) {
       }
     }
     return { message: "Failed to update", success: false };
+  }
+}
+
+export async function restartPrompt() {
+  try {
+    await deletePrompts();
+    revalidatePath("/home");
+    return { message: "Restarted successfully", success: true };
+  } catch (e) {
+    console.error(e);
+    return { message: "Failed to restart", success: false };
   }
 }
